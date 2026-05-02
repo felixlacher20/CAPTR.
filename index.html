@@ -527,6 +527,68 @@ nav {
 .login-success h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.3rem; }
 .login-success p { color: var(--text-muted); font-size: 0.8rem; }
 
+/* ─── APPLICATION FORM ─── */
+.apply-overlay {
+  position: fixed; inset: 0; z-index: 3000;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+  display: none; align-items: center; justify-content: center;
+}
+.apply-overlay.active { display: flex; }
+.apply-box {
+  background: var(--bg); width: 90%; max-width: 420px;
+  border-radius: 10px; padding: 2.5rem; position: relative;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+  max-height: 90vh; overflow-y: auto;
+}
+.apply-close {
+  position: absolute; top: 0.8rem; right: 0.8rem;
+  width: 32px; height: 32px; border: none; background: none;
+  font-size: 1.2rem; cursor: pointer; color: var(--text-muted);
+}
+.apply-trip-name {
+  font-size: 0.58rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 0.15rem;
+}
+.apply-title {
+  font-weight: 900; font-size: 1.3rem; letter-spacing: -0.01em;
+  text-transform: uppercase; margin-bottom: 0.2rem;
+}
+.apply-subtitle {
+  font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.8rem;
+}
+.apply-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem;
+}
+.form-textarea {
+  width: 100%; padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border); border-radius: 5px;
+  font-size: 0.82rem; font-family: inherit;
+  background: transparent; outline: none;
+  transition: border-color 0.3s;
+  resize: vertical; min-height: 90px;
+}
+.form-textarea:focus { border-color: #999; }
+.apply-success {
+  display: none; text-align: center; padding: 2rem 0;
+}
+.apply-success h3 {
+  font-size: 1.2rem; font-weight: 700; margin-bottom: 0.4rem;
+}
+.apply-success p {
+  color: var(--text-muted); font-size: 0.8rem; line-height: 1.6;
+}
+.apply-check {
+  width: 48px; height: 48px; margin: 0 auto 1rem;
+  border: 2px solid var(--text); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+}
+@media (max-width: 500px) {
+  .apply-row { grid-template-columns: 1fr; }
+}
+
 /* ─── HERO BLUR-IN ─── */
 @keyframes heroBlurIn {
   0% { filter: blur(20px); opacity: 0; }
@@ -604,6 +666,52 @@ nav {
     <div class="login-success" id="loginSuccess">
       <h3>Welcome in.</h3>
       <p>You're part of the crew now.</p>
+    </div>
+  </div>
+</div>
+
+<!-- APPLICATION FORM -->
+<div class="apply-overlay" id="applyOverlay">
+  <div class="apply-box">
+    <button class="apply-close" onclick="closeApply()">&times;</button>
+    <div id="applyForm">
+      <p class="apply-trip-name" id="applyTripName"></p>
+      <div class="apply-title">Apply Now</div>
+      <p class="apply-subtitle">Tell us about yourself — we'll reach out if it's a fit.</p>
+      <div class="apply-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-input" id="applyFirst" placeholder="Felix">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-input" id="applyLast" placeholder="Lacher">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="applyEmail" placeholder="hello@example.com">
+      </div>
+      <div class="apply-row">
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="tel" class="form-input" id="applyPhone" placeholder="+49 170 ...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Instagram</label>
+          <input type="text" class="form-input" id="applyIG" placeholder="@yourhandle">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tell us about your content</label>
+        <textarea class="form-textarea" id="applyWork" placeholder="What do you create? What's your niche? Why do you want to join?"></textarea>
+      </div>
+      <button class="form-btn" onclick="submitApplication()">Send Application</button>
+    </div>
+    <div class="apply-success" id="applySuccess">
+      <div class="apply-check">&#10003;</div>
+      <h3>Application sent.</h3>
+      <p>We'll review your profile and get back to you soon. Keep an eye on your inbox.</p>
     </div>
   </div>
 </div>
@@ -984,7 +1092,7 @@ function openTrip(i) {
       <ul style="list-style:none;padding:0;margin:0;">${includedHTML}</ul>
     </div>
     <div class="trip-detail-price">${t.price} <span>${t.priceSub}</span></div>
-    <button class="trip-detail-btn" onclick="openLogin()">Reserve Your Spot</button>`;
+    <button class="trip-detail-btn" onclick="openApply(${i})">Reserve Your Spot</button>`;
   document.getElementById('tripDetail').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -999,6 +1107,88 @@ function filterTrips(val) {
   });
 }
 
+// ─── APPLICATION FORM ───
+let currentTripIndex = 0;
+
+function openApply(i) {
+  currentTripIndex = i;
+  const t = trips[i];
+  document.getElementById('applyTripName').textContent = t.name + ' · ' + t.dates;
+  document.getElementById('applyForm').style.display = 'block';
+  document.getElementById('applySuccess').style.display = 'none';
+  // Clear previous values
+  ['applyFirst','applyLast','applyEmail','applyPhone','applyIG','applyWork'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('applyOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeApply() {
+  document.getElementById('applyOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function submitApplication() {
+  const first = document.getElementById('applyFirst').value.trim();
+  const last = document.getElementById('applyLast').value.trim();
+  const email = document.getElementById('applyEmail').value.trim();
+  const phone = document.getElementById('applyPhone').value.trim();
+  const ig = document.getElementById('applyIG').value.trim();
+  const work = document.getElementById('applyWork').value.trim();
+
+  if (!first || !email || !ig || !work) {
+    // Highlight empty required fields
+    [
+      {id: 'applyFirst', val: first},
+      {id: 'applyEmail', val: email},
+      {id: 'applyIG', val: ig},
+      {id: 'applyWork', val: work}
+    ].forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!f.val) {
+        el.style.borderColor = '#e55';
+        setTimeout(() => el.style.borderColor = '', 2000);
+      }
+    });
+    return;
+  }
+
+  const t = trips[currentTripIndex];
+  const btn = document.querySelector('#applyForm .form-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  fetch('https://formsubmit.co/ajax/captr.info@gmail.com', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      _subject: 'CAPTR Application: ' + t.name + ' — ' + first + ' ' + last,
+      'Trip': t.name + ' (' + t.dates + ')',
+      'Name': first + ' ' + last,
+      'Email': email,
+      'Phone': phone || '—',
+      'Instagram': ig,
+      'About their work': work
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('applyForm').style.display = 'none';
+    document.getElementById('applySuccess').style.display = 'block';
+    setTimeout(closeApply, 2500);
+  })
+  .catch(() => {
+    document.getElementById('applyForm').style.display = 'none';
+    document.getElementById('applySuccess').style.display = 'block';
+    setTimeout(closeApply, 2500);
+  })
+  .finally(() => {
+    btn.textContent = 'Send Application';
+    btn.disabled = false;
+  });
+}
+
 // ─── ANIMATIONS ───
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
@@ -1007,10 +1197,11 @@ document.querySelectorAll('.slide-in').forEach(el => observer.observe(el));
 
 // ─── ESC / OVERLAY ───
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeLogin(); closeTrip(); }
+  if (e.key === 'Escape') { closeLogin(); closeTrip(); closeApply(); }
 });
 document.getElementById('tripDetail').addEventListener('click', function(e) { if (e.target === this) closeTrip(); });
 document.getElementById('loginOverlay').addEventListener('click', function(e) { if (e.target === this) closeLogin(); });
+document.getElementById('applyOverlay').addEventListener('click', function(e) { if (e.target === this) closeApply(); });
 </script>
 
 </body>
