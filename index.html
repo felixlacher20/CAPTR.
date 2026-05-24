@@ -798,8 +798,8 @@ nav {
           </div>
           <div class="trip-info">
             <p class="trip-location">Indonesia</p>
-            <h3 class="trip-name">Bali Trip #1</h3>
-            <p class="trip-dates">May 25–29, 2026 · 5 Days · 4 People Max</p>
+            <h3 class="trip-name">Bali Trip</h3>
+            <p class="trip-dates">June 26–30, 2026 · 5 Days · 4 People Max</p>
             <p class="trip-desc">Waterfalls, surf, ATV rides, hidden beaches. 5 days across Canggu and Uluwatu — you live it, I film it.</p>
             <a class="trip-cta">View Details <span>&rarr;</span></a>
           </div>
@@ -870,8 +870,8 @@ nav {
           <div class="trips-panel-list">
             <div class="trips-panel-item">
               <div>
-                <div class="trips-panel-name">Bali Trip #1</div>
-                <div class="trips-panel-meta">May 25–29, 2026 · 5 Days</div>
+                <div class="trips-panel-name">Bali Trip</div>
+                <div class="trips-panel-meta">June 26–30, 2026 · 5 Days</div>
               </div>
               <button class="trips-panel-btn" onclick="openTrip(0)">View</button>
             </div>
@@ -920,9 +920,9 @@ nav {
 <script>
 const trips = [
   {
-    name: 'Bali Trip #1',
+    name: 'Bali Trip',
     location: 'Bali, Indonesia',
-    dates: 'May 25–29, 2026',
+    dates: 'June 26–30, 2026',
     duration: '5 Days',
     group: '4 People Max',
     description: 'Waterfalls, surf, ATV rides, hidden beaches. 5 days across Canggu and Uluwatu. You live it, I film it. Villa, transport, activities, content — everything in one package.',
@@ -935,8 +935,8 @@ const trips = [
     ],
     content: ['B-Roll Pack — +50 edited clips', '3 finished Reels (cut, graded, music)', 'Personal Branding Analysis (1-on-1 session)'],
     included: ['Premium villa accommodation', 'Private drivers & transport', 'All activities (surf, waterfalls, ATV)', 'Group dinners every evening'],
-    price: '~2,500 EUR',
-    priceSub: 'per person · all-in'
+    price: '€2,500',
+    priceSub: 'per person'
   }
 ];
 
@@ -1057,7 +1057,10 @@ function openTrip(i) {
       <ul style="list-style:none;padding:0;margin:0;">${includedHTML}</ul>
     </div>
     <div class="trip-detail-price">${t.price} <span>${t.priceSub}</span></div>
-    <button class="trip-detail-btn" onclick="openApply(${i})">Reserve Your Spot</button>`;
+    <div style="display:inline-block;margin-top:0.7rem;padding:0.38rem 0.85rem;background:transparent;color:var(--text);border:1px solid var(--text);border-radius:3rem;font-size:0.64rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Refer a friend, get 30% off</div>
+    <div style="text-align:center;">
+      <button class="trip-detail-btn" onclick="openApply(${i})">Reserve Your Spot</button>
+    </div>`;
   document.getElementById('tripDetail').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
